@@ -1,0 +1,399 @@
+{
+  "name": "CPDF : Aula 1 Google Calendar",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 👋 Aula 001 do n8n!\n## Profissionais do Futuro\nEsse exemplo mostra um agente de IA que interage com o calendário.\nVocê pode usar o Chat como entrada, mas pode conectá-lo também ao WhatsApp (pela API oficial da META ou Evolution)\n\n### 1. Conecte suas contas\n- Chave de API da OpenAI\n- oAUTH2 para o Google Calendar\n\n### 2. Prontos para testar?\nClique no Chat abaixo e comece a perguntar! ",
+        "height": 469,
+        "width": 319,
+        "color": 6
+      },
+      "id": "44559c0a-c15b-4957-89e3-f0b1ed773f38",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "e1f8a105-ec7b-4ad3-9414-a0b292fb2093",
+      "name": "Chat Recebido",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        380,
+        20
+      ],
+      "webhookId": "a213d1a0-a915-4642-898b-30d2f0da2fa5"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "12aeaf00-dc0e-41e0-8e48-4c8c640c35fd",
+      "name": "Modelo da OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        380,
+        200
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "MR7r7kkAdpxqispR",
+          "name": "OpenAi n8n_Dev"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "45386ec80aba0ae0e8de6834b54d056345462f179e367528a562907ddb360849@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Profissionais do Futuro"
+        },
+        "returnAll": true,
+        "options": {
+          "timeMin": "={{ $fromAI('after', 'The earliest datetime we want to look for events for') }}",
+          "timeMax": "={{ $fromAI('before', 'The latest datetime we want to look for events for') }}",
+          "singleEvents": true,
+          "query": "={{ $fromAI('query', 'The search query to look for in the calendar. Leave empty if no search query is needed') }}"
+        }
+      },
+      "id": "0700825f-fa13-4dd4-a9f4-ff0bb1d7dace",
+      "name": "Google Calendar Get",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        240
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "f8fHxQHswynYPGQW",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "45386ec80aba0ae0e8de6834b54d056345462f179e367528a562907ddb360849@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Profissionais do Futuro"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('attendees0_Attendees', ``, 'string') }}"
+          ],
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "id": "154c938e-94e5-4b77-aa50-a7147c4abe15",
+      "name": "Google Calendar Create",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.2,
+      "position": [
+        1180,
+        180
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "f8fHxQHswynYPGQW",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "delete",
+        "lastMessagesCount": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        1020,
+        420
+      ],
+      "id": "47ea6596-3bd7-49d5-af1e-af65260b913d",
+      "name": "Chat Memory Manager"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        740,
+        420
+      ],
+      "id": "cc21feff-4596-4cf8-bd64-b722c564cba7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {},
+      "id": "678e3312-18ba-40e3-a6d7-ac7c951c9d0a",
+      "name": "Memoria (Local)",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "45386ec80aba0ae0e8de6834b54d056345462f179e367528a562907ddb360849@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Profissionais do Futuro"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "updateFields": {
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}"
+        }
+      },
+      "id": "a5040158-1292-4acc-976b-0caa68f9a3af",
+      "name": "Google Calendar Update",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.2,
+      "position": [
+        1320,
+        120
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "f8fHxQHswynYPGQW",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=## Papel\nVocê é meu assistente pessoal especializado em marcar e gerenciar os apontamentos de minha agenda.\n\n## Tarefa\nSua tarefas são:\n- Atender aos clientes da Comunidade Profissionais do Futuro que tem interesse em  mentorias\n- Reunir as informações necessárias desses clientes com o objetivo de verificar, criar, editar e remover apontamentos na agenda, conforme a solicitação de cada um.\n\n\n### Diretrizes gerais de comunicação\n- Na primeira interação, sempre diga : \"[Bom dia / Boa Tarde / Boa noite]! \\nSou o assistente pessoal do Fernando Faraco, instrutor da Comunidade Profissionais do Futuro.\\nComo posso ajudar hoje?\";\n- Não forneça nenhum tipo de informação sobre o conteúdo dos apontamentos da agenda, em hipótese alguma;\n- Sempre verifique os apontamentos da agenda antes de responder à perguntas sobre disponibilidade de horários;\n\n\n### Diretrizes para apontamentos na agenda\n- Os agendamentos tem duração de 45 minutos;\n- Sempre verifique a data e hora atual (hoje) e crie os apontamentos para o futuro, preferencialmente para o dia seguinte em diante;\n- Os agendamentos devem ser criados apenas nos horários livres, sem apontamento, sempre em hora cheia (ex.: 10h, 11h, etc);\n- Ao informar horários disponíveis ao cliente, sempre sugira pelo menos 2 horários;\n- Sempre confirme com o cliente se o horário disponibilizado está adequado para ele, antes registrar o apontamento na agenda;\n- Se o cliente pedir um apontamento, você deve pedir as seguintes informações: 1) Nome Completo e 2) E-mail;\n- O apontamento deve ser criado com o seguinte Título ou Sumário : \"Mentoria com [Nome Completo]\";\n- O e-Mail será utilizado para registro do participante no apontamento, para que ele possa receber as notificações relacionadas à alterações;\n- O Cliente só pode pedir alteração ou exclusão de seu próprio apontamento. Caso necessário solicite o e-mail do cliente para verificar se é igual ao do apontamento antes de alteração ou exclusão.\n\n\n### Horários disponíveis\n- Segunda-feira das 8:00 AM às 11:00 AM\n- Terça-feira das 8:00 AM às 11:00 AM\n- Quarta-feira das 8:00 AM às 11:00 AM\n- Quinta-Feira das 8:00 AM às 11:00 AM\n- Sexta-feira das 8:00 AM às 11:00 AM\n\n## Contexto adicional\nHoje é {{ $now.format('cccc') }} dia {{ $now.format('dd-MM-yyyy HH:mm') }}.\n\n## Resposta para apontamentos\n[Primeiro Nome], seu agendamento para a mentoria foi realizado com sucesso!\n\nDetalhes do Agendamento:\n\n- Data: Segunda-feira, 02 de junho de 2025\n- Horário: 10:00 AM - 10:45 AM\n- Nome: [Nome Completo]\n- E-mail: [E-mail]\n\nVocê receberá notificações relacionadas a esse compromisso no seu e-mail. \nSe precisar de mais alguma coisa, estou à disposição para ajudar!"
+        }
+      },
+      "id": "d6e36330-07e6-4173-b018-1f62f6d328e2",
+      "name": "Agente de Apontamentos",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        560,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Ferramentas\nNesse exemplo estamos disponibilizando\nao agente ferramentas para agendamento.\nAs ferramentas possuem funcionalidades\nespecíficas, assim conseguem compreender\no contexto e funcionam melhor.",
+        "height": 460,
+        "width": 620,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        980,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "e443ed62-a973-49bb-92ee-8cc689070c57",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Para testes e aula apenas\n\nEsse \"Trigger\" serve apenas para \nlimpar a memória do agente, caso necessário,\ndurante os testes.\nEm produção, pode ser removido.",
+        "height": 180,
+        "width": 1100
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        280,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "5e892108-f674-4286-915e-a464f471a5a8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Fluxo Principal\nAqui é configurado o agente e o seu \"Cérebro\".",
+        "height": 460,
+        "width": 680
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        280,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "30cabc28-8ca9-44b8-849a-0d5feb8afeba",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "45386ec80aba0ae0e8de6834b54d056345462f179e367528a562907ddb360849@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Profissionais do Futuro"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "id": "5fec9ba4-52d3-4fff-b94e-3a222914dbef",
+      "name": "Google Calendar Delete",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.2,
+      "position": [
+        1460,
+        60
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "f8fHxQHswynYPGQW",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat Recebido": {
+      "main": [
+        [
+          {
+            "node": "Agente de Apontamentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modelo da OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente de Apontamentos",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar Get": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Apontamentos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar Create": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Apontamentos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Chat Memory Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria (Local)": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente de Apontamentos",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Chat Memory Manager",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar Update": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Apontamentos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Apontamentos": {
+      "main": [
+        []
+      ]
+    },
+    "Google Calendar Delete": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Apontamentos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6d957193-3a1d-4d47-bfa5-55bec48d5d21",
+  "meta": {
+    "templateId": "PT1i+zU92Ii5O2XCObkhfHJR5h9rNJTpiCIkYJk9jHU=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "237482541a9cd4de9c919607a3cc4e627adc9b89afc0f9efcf0e441948fe1783"
+  },
+  "id": "NuMYWVfTTxDnTtdm",
+  "tags": [
+    {
+      "createdAt": "2025-06-01T04:34:11.616Z",
+      "updatedAt": "2025-06-01T04:34:11.616Z",
+      "id": "Lt8mXXZzhDrFC2py",
+      "name": "CPDF"
+    },
+    {
+      "createdAt": "2025-06-01T04:34:17.197Z",
+      "updatedAt": "2025-06-01T04:34:17.197Z",
+      "id": "YLg3cGq1zLPQnlo6",
+      "name": "Aula"
+    }
+  ]
+}
